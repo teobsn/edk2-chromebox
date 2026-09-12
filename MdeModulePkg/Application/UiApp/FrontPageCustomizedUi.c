@@ -53,6 +53,11 @@ UiCustomizeFrontPage (
   // Create reset menu.
   //
   UiCreateResetMenu (HiiHandle, StartOpCodeHandle);
+
+  //
+  // Create power off menu.
+  //
+  UiCreatePowerOffMenu (HiiHandle, StartOpCodeHandle);
 }
 
 /**

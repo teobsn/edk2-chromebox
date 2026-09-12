@@ -24,5 +24,7 @@
 #string STR_EMPTY_STRING               #language en-US  ""
 #string STR_RESET_STRING               #language en-US  "Reboot"
 #string STR_RESET_STRING_HELP          #language en-US  "Reboot the device"
+#string STR_POWER_OFF_STRING           #language en-US  "Power Off"
+#string STR_POWER_OFF_STRING_HELP      #language en-US  "Shut down the device"
 #string STR_NULL_STRING                #language en-US  " "
 #string STR_RESET_REMINDER_POPUP       #language en-US  "Configuration changed. Reset to apply it now."
