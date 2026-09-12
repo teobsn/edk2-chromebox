@@ -264,6 +264,18 @@ BootManagerContinueNotifyCallback (
   return EFI_SUCCESS;
 }
 
+STATIC
+VOID
+EFIAPI
+PlatformReadyToBootCallback (
+  IN EFI_EVENT  Event,
+  IN VOID       *Context
+  )
+{
+  BootLogoClearProgress ();
+  gBS->CloseEvent (Event);
+}
+
 EFI_STATUS
 EFIAPI
 BootManagerEntryNotifyCallback (
@@ -538,41 +550,52 @@ PlatformBootManagerAfterConsole (
       );
   }
 
-  if (FixedPcdGetBool (PcdBootManagerEscape)) {
-    if (FixedPcdGetBool (PcdSerialTerminalPrintEnabled)) {
-      Print (
-        L"\n"
-        L"    Esc              to enter Setup Option Menu.\n"
-        L"    ENTER            to boot directly.\n"
-        L"\n"
-        );
+  EFI_EVENT  ReadyToBootEvent;
+
+  EfiCreateEventReadyToBootEx (
+    TPL_CALLBACK,
+    PlatformReadyToBootCallback,
+    NULL,
+    &ReadyToBootEvent
+    );
+
+  if (PcdGet16 (PcdPlatformBootTimeOut) != 0) {
+    if (FixedPcdGetBool (PcdBootManagerEscape)) {
+      if (FixedPcdGetBool (PcdSerialTerminalPrintEnabled)) {
+        Print (
+          L"\n"
+          L"    Esc              to enter Setup Option Menu.\n"
+          L"    ENTER            to boot directly.\n"
+          L"\n"
+          );
+      } else {
+        BootLogoUpdateProgress (
+          White,
+          Black,
+          L"Press ESC for Boot Options/Settings",
+          White,
+          0,
+          0
+          );
+      }
     } else {
-      BootLogoUpdateProgress (
-        White,
-        Black,
-        L"Press ESC for Boot Options/Settings",
-        White,
-        0,
-        0
-        );
-    }
-  } else {
-    if (FixedPcdGetBool (PcdSerialTerminalPrintEnabled)) {
-      Print (
-        L"\n"
-        L"    F2 or Down      to enter Setup Option Menu.\n"
-        L"    ENTER           to boot directly.\n"
-        L"\n"
-        );
-    } else {
-      BootLogoUpdateProgress (
-        White,
-        Black,
-        L"Press F2 or Down for Boot Options/Settings",
-        White,
-        0,
-        0
-        );
+      if (FixedPcdGetBool (PcdSerialTerminalPrintEnabled)) {
+        Print (
+          L"\n"
+          L"    F2 or Down      to enter Setup Option Menu.\n"
+          L"    ENTER           to boot directly.\n"
+          L"\n"
+          );
+      } else {
+        BootLogoUpdateProgress (
+          White,
+          Black,
+          L"Press F2 or Down for Boot Options/Settings",
+          White,
+          0,
+          0
+          );
+      }
     }
   }
 }
