@@ -817,7 +817,7 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdPrioritizeInternal|$(PRIORITIZE_INTERNAL)
 
   gUefiPayloadPkgTokenSpaceGuid.PcdBootManagerEscape|$(BOOT_MANAGER_ESCAPE)
-  gUefiPayloadPkgTokenSpaceGuid.PcdSkipConnectAll|$(SKIP_CONNECT_ALL)
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSkipConnectAll|$(SKIP_CONNECT_ALL)
   gUefiPayloadPkgTokenSpaceGuid.PcdSerialTerminalPrintEnabled|!$(DISABLE_SERIAL_TERMINAL)
   gUefiPayloadPkgTokenSpaceGuid.PcdSecureBootDefaultEnable|$(SECURE_BOOT_DEFAULT_ENABLE)
 
