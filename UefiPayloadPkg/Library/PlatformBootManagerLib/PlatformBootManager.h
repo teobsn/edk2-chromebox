@@ -30,6 +30,7 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #include <Library/TcgPhysicalPresenceLib.h>
 #include <Library/Tcg2PhysicalPresenceLib.h>
 #include <Protocol/SmmAccess2.h>
+#include <Guid/BootSplashConfig.h>
 
 typedef struct {
   EFI_DEVICE_PATH_PROTOCOL    *DevicePath;
@@ -98,6 +99,23 @@ BootSplashRequiresConnect (
 **/
 VOID
 BootSplashApply (
+  VOID
+  );
+
+/**
+  Read a UINT8 boot splash / fast boot NVRAM variable or return DefaultValue.
+**/
+UINT8
+BootSplashGetUint8Variable (
+  IN CHAR16  *VariableName,
+  IN UINT8   DefaultValue
+  );
+
+/**
+  Check if Fast Boot (skipping ConnectAll) is enabled via NVRAM or PCD.
+**/
+BOOLEAN
+PlatformSkipConnectAll (
   VOID
   );
 

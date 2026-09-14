@@ -276,6 +276,8 @@ PlatformReadyToBootCallback (
   gBS->CloseEvent (Event);
 }
 
+STATIC BOOLEAN  mConnectAllSkipped = FALSE;
+
 EFI_STATUS
 EFIAPI
 BootManagerEntryNotifyCallback (
@@ -284,6 +286,15 @@ BootManagerEntryNotifyCallback (
 {
   EFI_GRAPHICS_OUTPUT_BLT_PIXEL  Black;
   EFI_GRAPHICS_OUTPUT_BLT_PIXEL  White;
+
+  //
+  // Connect all devices and refresh options if Fast Boot previously skipped it.
+  //
+  if (mConnectAllSkipped) {
+    EfiBootManagerConnectAll ();
+    EfiBootManagerRefreshAllBootOption ();
+    mConnectAllSkipped = FALSE;
+  }
 
   //
   // We can't call UnregisterKeyNotify () from this handler,
@@ -495,8 +506,13 @@ PlatformBootManagerAfterConsole (
     BootSplashApply ();
   } else {
     BootSplashApply ();
-    EfiBootManagerConnectAll ();
-    EfiBootManagerRefreshAllBootOption ();
+    if (!PlatformSkipConnectAll ()) {
+      EfiBootManagerConnectAll ();
+      EfiBootManagerRefreshAllBootOption ();
+    } else {
+      mConnectAllSkipped = TRUE;
+      DEBUG ((DEBUG_INFO, "%a: Fast Boot active; ConnectAll skipped\n", __func__));
+    }
   }
 
   //
@@ -508,6 +524,11 @@ PlatformBootManagerAfterConsole (
   // ProcessCapsules() in PlatformBootManagerBeforeConsole().
   //
   if (GetBootModeHob () == BOOT_ON_FLASH_UPDATE) {
+    if (mConnectAllSkipped) {
+      EfiBootManagerConnectAll ();
+      EfiBootManagerRefreshAllBootOption ();
+      mConnectAllSkipped = FALSE;
+    }
     // TODO: when enabling capsule support for laptops, add a battery check here
     Status = ProcessCapsules ();
     if (EFI_ERROR (Status)) {
@@ -632,5 +653,13 @@ PlatformBootManagerUnableToBoot (
   VOID
   )
 {
+  if (mConnectAllSkipped) {
+    DEBUG ((DEBUG_WARN, "%a: Boot option failed; connecting all devices and retrying...\n", __func__));
+    EfiBootManagerConnectAll ();
+    EfiBootManagerRefreshAllBootOption ();
+    mConnectAllSkipped = FALSE;
+    gRT->ResetSystem (EfiResetWarm, EFI_SUCCESS, 0, NULL);
+  }
+
   return;
 }
