@@ -18,6 +18,7 @@
 #include <Library/FileExplorerLib.h>
 #include <Library/HiiLib.h>
 #include <Library/MemoryAllocationLib.h>
+#include <Library/PcdLib.h>
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/UefiDriverEntryPoint.h>
 #include <Library/UefiLib.h>

@@ -17,7 +17,6 @@
 /**
   Read a UINT8 boot splash NVRAM variable or return DefaultValue.
 **/
-STATIC
 UINT8
 BootSplashGetUint8Variable (
   IN CHAR16  *VariableName,
@@ -317,4 +316,18 @@ BootSplashApply (
   }
 
   BootSplashDisplayDefault ();
+}
+
+/**
+  Check if Fast Boot (skipping ConnectAll) is enabled via NVRAM or PCD.
+**/
+BOOLEAN
+PlatformSkipConnectAll (
+  VOID
+  )
+{
+  UINT8  DefaultVal;
+
+  DefaultVal = FixedPcdGetBool (PcdSkipConnectAll) ? 1 : 0;
+  return (BOOLEAN)(BootSplashGetUint8Variable (FAST_BOOT_ENABLE_VARIABLE_NAME, DefaultVal) != 0);
 }
