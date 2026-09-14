@@ -28,6 +28,11 @@ formset
     name      = BootSplashType,
     guid      = UEFI_PAYLOAD_BOOT_SPLASH_GUID;
 
+  efivarstore BOOT_SPLASH_UINT8_VAR,
+    attribute = EFI_VARIABLE_BOOTSERVICE_ACCESS | EFI_VARIABLE_RUNTIME_ACCESS | EFI_VARIABLE_NON_VOLATILE,
+    name      = FastBootEnable,
+    guid      = UEFI_PAYLOAD_BOOT_SPLASH_GUID;
+
   form formid = BOOT_SPLASH_FORM_ID,
     title = STRING_TOKEN(STR_BOOT_SPLASH_FORM_TITLE);
 
@@ -37,6 +42,14 @@ formset
     checkbox varid = BootSplashEnable.Value,
       prompt = STRING_TOKEN(STR_BOOT_SPLASH_ENABLE_PROMPT),
       help   = STRING_TOKEN(STR_BOOT_SPLASH_ENABLE_HELP),
+      flags  = 0,
+    endcheckbox;
+
+    subtitle text = STRING_TOKEN(STR_NULL_STRING);
+
+    checkbox varid = FastBootEnable.Value,
+      prompt = STRING_TOKEN(STR_FAST_BOOT_ENABLE_PROMPT),
+      help   = STRING_TOKEN(STR_FAST_BOOT_ENABLE_HELP),
       flags  = CHECKBOX_DEFAULT,
     endcheckbox;
 

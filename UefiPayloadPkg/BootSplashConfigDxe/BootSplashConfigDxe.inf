@@ -36,10 +36,14 @@
   FileExplorerLib
   HiiLib
   MemoryAllocationLib
+  PcdLib
   UefiBootServicesTableLib
   UefiDriverEntryPoint
   UefiLib
   UefiRuntimeServicesTableLib
+
+[Pcd]
+  gUefiPayloadPkgTokenSpaceGuid.PcdSkipConnectAll
 
 [Guids]
   gEfiHiiPlatformSetupFormsetGuid               ## CONSUMES

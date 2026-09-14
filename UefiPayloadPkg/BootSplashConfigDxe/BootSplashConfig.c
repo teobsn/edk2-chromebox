@@ -93,6 +93,28 @@ BootSplashSeedDefaults (
       DEBUG ((DEBUG_WARN, "%a: failed to seed BootSplashType: %r\n", __func__, Status));
     }
   }
+
+  DataSize = sizeof (Value);
+  Status   = gRT->GetVariable (
+                    FAST_BOOT_ENABLE_VARIABLE_NAME,
+                    &gUefiPayloadBootSplashGuid,
+                    NULL,
+                    &DataSize,
+                    &Value
+                    );
+  if (Status == EFI_NOT_FOUND) {
+    Value = FixedPcdGetBool (PcdSkipConnectAll) ? 1 : 0;
+    Status = gRT->SetVariable (
+                    FAST_BOOT_ENABLE_VARIABLE_NAME,
+                    &gUefiPayloadBootSplashGuid,
+                    BOOT_SPLASH_VARIABLE_ATTRIBUTES,
+                    sizeof (Value),
+                    &Value
+                    );
+    if (EFI_ERROR (Status)) {
+      DEBUG ((DEBUG_WARN, "%a: failed to seed FastBootEnable: %r\n", __func__, Status));
+    }
+  }
 }
 
 /**
