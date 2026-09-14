@@ -923,6 +923,29 @@ BootMaintRouteConfig (
     DEBUG ((DEBUG_INFO, "BMM: Successfully set PrioritizeInternal to %d\n", PrioritizeInternalValue));
   }
 
+  DEBUG ((DEBUG_VERBOSE, "BMM: FastBoot - New: %d, Old: %d\n", NewBmmData->FastBoot, OldBmmData->FastBoot));
+  if (CompareMem (&NewBmmData->FastBoot, &OldBmmData->FastBoot, sizeof (NewBmmData->FastBoot)) != 0) {
+    UINT8  FastBootValue;
+
+    FastBootValue = NewBmmData->FastBoot;
+    DEBUG ((DEBUG_INFO, "BMM: Setting FastBoot to %d\n", FastBootValue));
+    Status = gRT->SetVariable (
+                    L"FastBootEnable",
+                    &mBootMaintGuid,
+                    EFI_VARIABLE_BOOTSERVICE_ACCESS | EFI_VARIABLE_RUNTIME_ACCESS | EFI_VARIABLE_NON_VOLATILE,
+                    sizeof (UINT8),
+                    &FastBootValue
+                    );
+    if (EFI_ERROR (Status)) {
+      DEBUG ((DEBUG_ERROR, "BMM: Failed to set FastBootEnable variable: %r\n", Status));
+      Offset = OFFSET_OF (BMM_FAKE_NV_DATA, FastBoot);
+      goto Exit;
+    }
+
+    Private->BmmOldFakeNVData.FastBoot = NewBmmData->FastBoot;
+    DEBUG ((DEBUG_INFO, "BMM: Successfully set FastBoot to %d\n", FastBootValue));
+  }
+
   //
   // Check data which located in Driver Options Menu and save the settings if need
   //
@@ -1611,6 +1634,43 @@ InitializeBmmConfig (
 
     // Also initialize OldFakeNVData to match, so CompareMem works correctly
     CallbackData->BmmOldFakeNVData.BootDevicePriority = CallbackData->BmmFakeNvData.BootDevicePriority;
+  }
+
+  //
+  // Initialize FastBoot from runtime variable, fallback to PCD
+  // 0 = Disabled, 1 = Enabled (default if PCD set)
+  //
+  {
+    UINT8    *FastBootVar;
+    UINTN    FastBootVarSize;
+
+    CallbackData->BmmFakeNvData.FastBoot = PcdGetBool (PcdSkipConnectAll) ? 1 : 0;
+    FastBootVarSize = sizeof (UINT8);
+    FastBootVar = AllocatePool (FastBootVarSize);
+    if (FastBootVar != NULL) {
+      EFI_STATUS  Status;
+      UINTN       TempSize;
+
+      TempSize = FastBootVarSize;
+      Status   = gRT->GetVariable (L"FastBootEnable", &mBootMaintGuid, NULL, &TempSize, FastBootVar);
+      if (Status == EFI_BUFFER_TOO_SMALL) {
+        FreePool (FastBootVar);
+        FastBootVar = AllocatePool (TempSize);
+        if (FastBootVar != NULL) {
+          Status = gRT->GetVariable (L"FastBootEnable", &mBootMaintGuid, NULL, &TempSize, FastBootVar);
+        }
+      }
+
+      if (!EFI_ERROR (Status) && (TempSize == sizeof (UINT8))) {
+        CallbackData->BmmFakeNvData.FastBoot = (*FastBootVar != 0) ? 1 : 0;
+      }
+
+      if (FastBootVar != NULL) {
+        FreePool (FastBootVar);
+      }
+    }
+
+    CallbackData->BmmOldFakeNVData.FastBoot = CallbackData->BmmFakeNvData.FastBoot;
   }
 
   //

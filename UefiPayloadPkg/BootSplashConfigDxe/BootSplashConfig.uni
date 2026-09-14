@@ -28,7 +28,4 @@
 #string STR_BOOT_SPLASH_BROWSE_PROMPT       #language en-US "Browse for BMP..."
 #string STR_BOOT_SPLASH_BROWSE_HELP         #language en-US "Open the file explorer and select a .bmp logo file"
 
-#string STR_FAST_BOOT_ENABLE_PROMPT         #language en-US "Fast Boot"
-#string STR_FAST_BOOT_ENABLE_HELP           #language en-US "Bypass full device enumeration on boot and connect only the target boot device"
-
 #string STR_NULL_STRING                     #language en-US ""
