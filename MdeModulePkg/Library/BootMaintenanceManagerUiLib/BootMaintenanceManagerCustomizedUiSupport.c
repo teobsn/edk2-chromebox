@@ -186,6 +186,62 @@ BmmCreatePrioritizeInternalMenu (
 }
 
 /**
+  Create Fast Boot menu in the page.
+
+  @param[in]    HiiHandle           The hii handle for the Uiapp driver.
+  @param[in]    StartOpCodeHandle   The opcode handle to save the new opcode.
+
+**/
+VOID
+BmmCreateFastBootMenu (
+  IN EFI_HII_HANDLE  HiiHandle,
+  IN VOID            *StartOpCodeHandle
+  )
+{
+  VOID  *OptionsOpCodeHandle;
+
+  OptionsOpCodeHandle = HiiAllocateOpCodeHandle ();
+  ASSERT (OptionsOpCodeHandle != NULL);
+
+  //
+  // Create "Disabled" option (value 0)
+  //
+  HiiCreateOneOfOptionOpCode (
+    OptionsOpCodeHandle,
+    STRING_TOKEN (STR_FAST_BOOT_DISABLED),
+    0,
+    EFI_IFR_TYPE_NUM_SIZE_8,
+    0
+    );
+
+  //
+  // Create "Enabled" option (value 1)
+  //
+  HiiCreateOneOfOptionOpCode (
+    OptionsOpCodeHandle,
+    STRING_TOKEN (STR_FAST_BOOT_ENABLED),
+    0,
+    EFI_IFR_TYPE_NUM_SIZE_8,
+    1
+    );
+
+  HiiCreateOneOfOpCode (
+    StartOpCodeHandle,
+    FAST_BOOT_QUESTION_ID,
+    VARSTORE_ID_BOOT_MAINT,
+    FAST_BOOT_VAR_OFFSET,
+    STRING_TOKEN (STR_FAST_BOOT_PROMPT),
+    STRING_TOKEN (STR_FAST_BOOT_HELP),
+    EFI_IFR_FLAG_CALLBACK,
+    EFI_IFR_NUMERIC_SIZE_1,
+    OptionsOpCodeHandle,
+    NULL
+    );
+
+  HiiFreeOpCodeHandle (OptionsOpCodeHandle);
+}
+
+/**
   Create Time Out Menu in the page.
 
   @param[in]    HiiHandle           The hii handle for the Uiapp driver.

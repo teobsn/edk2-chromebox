@@ -43,9 +43,6 @@
   UefiLib
   UefiRuntimeServicesTableLib
 
-[Pcd]
-  gUefiPayloadPkgTokenSpaceGuid.PcdSkipConnectAll
-
 [Guids]
   gEfiHiiPlatformSetupFormsetGuid               ## CONSUMES
   gUefiPayloadBootSplashGuid                    ## PRODUCES ## Variable:L"BootSplashEnable"
