@@ -318,6 +318,7 @@ BdsWait (
 {
   EFI_STATUS  Status;
   UINT16      TimeoutRemain;
+  UINTN       Index;
 
   DEBUG ((DEBUG_INFO, "[Bds]BdsWait ...Zzzzzzzzzzzz...\n"));
 
@@ -348,13 +349,33 @@ BdsWait (
   }
 
   //
-  // If the platform configured a nonzero and finite time-out, and we have
-  // actually reached that, report 100% completion to the platform.
+  // When Timeout is 0, provide a brief grace period to allow keyboard drivers
+  // (PS/2 typematic repeat or USB interrupt transfers) to report a held hotkey.
+  //
+  if (PcdGet16 (PcdPlatformBootTimeOut) == 0) {
+    for (Index = 0; Index < 5; Index++) {
+      BdsReadKeys ();
+      if (HotkeyTriggered != NULL) {
+        Status = BdsWaitForSingleEvent (HotkeyTriggered, EFI_TIMER_PERIOD_MILLISECONDS (100));
+        if (!EFI_ERROR (Status)) {
+          DEBUG ((DEBUG_INFO, "[Bds] Hotkey triggered during zero-timeout grace period!\n"));
+          TimeoutRemain = 1;
+          break;
+        }
+      } else {
+        gBS->Stall (100000);
+      }
+    }
+  }
+
+  //
+  // If the platform configured a finite time-out (or 0) and timeout expired without
+  // a hotkey, report completion to the platform.
   //
   // Note that the (TimeoutRemain == 0) condition excludes
   // PcdPlatformBootTimeOut=0xFFFF, and that's deliberate.
   //
-  if ((PcdGet16 (PcdPlatformBootTimeOut) != 0) && (TimeoutRemain == 0)) {
+  if (TimeoutRemain == 0) {
     PlatformBootManagerWaitCallback (0);
   }
 
