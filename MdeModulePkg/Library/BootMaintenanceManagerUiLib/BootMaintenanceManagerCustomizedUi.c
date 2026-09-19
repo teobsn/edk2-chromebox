@@ -93,6 +93,16 @@ UiCustomizeBMMPage (
   // Create "Time Out" menu.
   //
   BmmCreateTimeOutMenu (HiiHandle, StartOpCodeHandle);
+
+  //
+  // Create empty line.
+  //
+  BmmCreateEmptyLine (HiiHandle, StartOpCodeHandle);
+
+  //
+  // Create "Zero-Timeout Keyboard Grace Period" menu.
+  //
+  BmmCreateZeroTimeoutGracePeriodMenu (HiiHandle, StartOpCodeHandle);
 }
 
 /**

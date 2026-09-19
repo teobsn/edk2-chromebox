@@ -39,6 +39,7 @@
   DEFINE PLATFORM_BOOT_TIMEOUT        = 3
   DEFINE BOOT_MANAGER_ESCAPE          = FALSE
   DEFINE SKIP_CONNECT_ALL             = FALSE
+  DEFINE ZERO_TIMEOUT_KEYBOARD_GRACE_PERIOD = TRUE
   DEFINE ATA_ENABLE                   = TRUE
   DEFINE SD_ENABLE                    = TRUE
   DEFINE PS2_MOUSE_ENABLE             = TRUE
@@ -818,6 +819,7 @@
 
   gUefiPayloadPkgTokenSpaceGuid.PcdBootManagerEscape|$(BOOT_MANAGER_ESCAPE)
   gEfiMdeModulePkgTokenSpaceGuid.PcdSkipConnectAll|$(SKIP_CONNECT_ALL)
+  gEfiMdeModulePkgTokenSpaceGuid.PcdZeroTimeoutKeyboardGracePeriod|$(ZERO_TIMEOUT_KEYBOARD_GRACE_PERIOD)
   gUefiPayloadPkgTokenSpaceGuid.PcdSerialTerminalPrintEnabled|!$(DISABLE_SERIAL_TERMINAL)
   gUefiPayloadPkgTokenSpaceGuid.PcdSecureBootDefaultEnable|$(SECURE_BOOT_DEFAULT_ENABLE)
 

@@ -946,6 +946,29 @@ BootMaintRouteConfig (
     DEBUG ((DEBUG_INFO, "BMM: Successfully set FastBoot to %d\n", FastBootValue));
   }
 
+  DEBUG ((DEBUG_VERBOSE, "BMM: ZeroTimeoutGracePeriod - New: %d, Old: %d\n", NewBmmData->ZeroTimeoutGracePeriod, OldBmmData->ZeroTimeoutGracePeriod));
+  if (CompareMem (&NewBmmData->ZeroTimeoutGracePeriod, &OldBmmData->ZeroTimeoutGracePeriod, sizeof (NewBmmData->ZeroTimeoutGracePeriod)) != 0) {
+    UINT8  GracePeriodValue;
+
+    GracePeriodValue = NewBmmData->ZeroTimeoutGracePeriod;
+    DEBUG ((DEBUG_INFO, "BMM: Setting ZeroTimeoutGracePeriod to %d\n", GracePeriodValue));
+    Status = gRT->SetVariable (
+                    L"ZeroTimeoutGracePeriod",
+                    &mBootMaintGuid,
+                    EFI_VARIABLE_BOOTSERVICE_ACCESS | EFI_VARIABLE_RUNTIME_ACCESS | EFI_VARIABLE_NON_VOLATILE,
+                    sizeof (UINT8),
+                    &GracePeriodValue
+                    );
+    if (EFI_ERROR (Status)) {
+      DEBUG ((DEBUG_ERROR, "BMM: Failed to set ZeroTimeoutGracePeriod variable: %r\n", Status));
+      Offset = OFFSET_OF (BMM_FAKE_NV_DATA, ZeroTimeoutGracePeriod);
+      goto Exit;
+    }
+
+    Private->BmmOldFakeNVData.ZeroTimeoutGracePeriod = NewBmmData->ZeroTimeoutGracePeriod;
+    DEBUG ((DEBUG_INFO, "BMM: Successfully set ZeroTimeoutGracePeriod to %d\n", GracePeriodValue));
+  }
+
   //
   // Check data which located in Driver Options Menu and save the settings if need
   //
@@ -1671,6 +1694,43 @@ InitializeBmmConfig (
     }
 
     CallbackData->BmmOldFakeNVData.FastBoot = CallbackData->BmmFakeNvData.FastBoot;
+  }
+
+  //
+  // Initialize ZeroTimeoutGracePeriod from runtime variable, fallback to PCD
+  // 0 = Disabled, 1 = Enabled (default if PCD set)
+  //
+  {
+    UINT8    *GracePeriodVar;
+    UINTN    GracePeriodVarSize;
+
+    CallbackData->BmmFakeNvData.ZeroTimeoutGracePeriod = PcdGetBool (PcdZeroTimeoutKeyboardGracePeriod) ? 1 : 0;
+    GracePeriodVarSize = sizeof (UINT8);
+    GracePeriodVar = AllocatePool (GracePeriodVarSize);
+    if (GracePeriodVar != NULL) {
+      EFI_STATUS  Status;
+      UINTN       TempSize;
+
+      TempSize = GracePeriodVarSize;
+      Status   = gRT->GetVariable (L"ZeroTimeoutGracePeriod", &mBootMaintGuid, NULL, &TempSize, GracePeriodVar);
+      if (Status == EFI_BUFFER_TOO_SMALL) {
+        FreePool (GracePeriodVar);
+        GracePeriodVar = AllocatePool (TempSize);
+        if (GracePeriodVar != NULL) {
+          Status = gRT->GetVariable (L"ZeroTimeoutGracePeriod", &mBootMaintGuid, NULL, &TempSize, GracePeriodVar);
+        }
+      }
+
+      if (!EFI_ERROR (Status) && (TempSize == sizeof (UINT8))) {
+        CallbackData->BmmFakeNvData.ZeroTimeoutGracePeriod = (*GracePeriodVar != 0) ? 1 : 0;
+      }
+
+      if (GracePeriodVar != NULL) {
+        FreePool (GracePeriodVar);
+      }
+    }
+
+    CallbackData->BmmOldFakeNVData.ZeroTimeoutGracePeriod = CallbackData->BmmFakeNvData.ZeroTimeoutGracePeriod;
   }
 
   //

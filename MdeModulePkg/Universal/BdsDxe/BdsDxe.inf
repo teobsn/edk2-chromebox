@@ -100,6 +100,7 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdCapsuleFmpSupport                 ## CONSUMES
   gEfiMdeModulePkgTokenSpaceGuid.PcdPlatformRecoverySupport           ## CONSUMES
   gEfiMdeModulePkgTokenSpaceGuid.PcdSupportInfiniteBootRetries        ## CONSUMES
+  gEfiMdeModulePkgTokenSpaceGuid.PcdZeroTimeoutKeyboardGracePeriod    ## CONSUMES
 
 [Depex]
   TRUE

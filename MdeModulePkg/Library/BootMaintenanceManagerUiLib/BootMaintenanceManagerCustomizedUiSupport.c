@@ -271,6 +271,62 @@ BmmCreateTimeOutMenu (
 }
 
 /**
+  Create Zero-Timeout Keyboard Grace Period Menu in the page.
+
+  @param[in]    HiiHandle           The hii handle for the Uiapp driver.
+  @param[in]    StartOpCodeHandle   The opcode handle to save the new opcode.
+
+**/
+VOID
+BmmCreateZeroTimeoutGracePeriodMenu (
+  IN EFI_HII_HANDLE  HiiHandle,
+  IN VOID            *StartOpCodeHandle
+  )
+{
+  VOID  *OptionsOpCodeHandle;
+
+  OptionsOpCodeHandle = HiiAllocateOpCodeHandle ();
+  ASSERT (OptionsOpCodeHandle != NULL);
+
+  //
+  // Create "Disabled" option (value 0)
+  //
+  HiiCreateOneOfOptionOpCode (
+    OptionsOpCodeHandle,
+    STRING_TOKEN (STR_ZERO_TIMEOUT_GRACE_PERIOD_DISABLED),
+    0,
+    EFI_IFR_TYPE_NUM_SIZE_8,
+    0
+    );
+
+  //
+  // Create "Enabled" option (value 1)
+  //
+  HiiCreateOneOfOptionOpCode (
+    OptionsOpCodeHandle,
+    STRING_TOKEN (STR_ZERO_TIMEOUT_GRACE_PERIOD_ENABLED),
+    0,
+    EFI_IFR_TYPE_NUM_SIZE_8,
+    1
+    );
+
+  HiiCreateOneOfOpCode (
+    StartOpCodeHandle,
+    ZERO_TIMEOUT_GRACE_PERIOD_QUESTION_ID,
+    VARSTORE_ID_BOOT_MAINT,
+    ZERO_TIMEOUT_GRACE_PERIOD_VAR_OFFSET,
+    STRING_TOKEN (STR_ZERO_TIMEOUT_GRACE_PERIOD_PROMPT),
+    STRING_TOKEN (STR_ZERO_TIMEOUT_GRACE_PERIOD_HELP),
+    EFI_IFR_FLAG_CALLBACK,
+    EFI_IFR_NUMERIC_SIZE_1,
+    OptionsOpCodeHandle,
+    NULL
+    );
+
+  HiiFreeOpCodeHandle (OptionsOpCodeHandle);
+}
+
+/**
   Extract device path for given HII handle and class guid.
 
   @param Handle          The HII handle.
