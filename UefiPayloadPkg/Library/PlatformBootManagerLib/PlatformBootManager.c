@@ -590,7 +590,7 @@ PlatformBootManagerAfterConsole (
     &ReadyToBootEvent
     );
 
-  if (PcdGet16 (PcdPlatformBootTimeOut) != 0) {
+  if ((PcdGet16 (PcdPlatformBootTimeOut) != 0) && PlatformShowBootPrompt ()) {
     if (FixedPcdGetBool (PcdBootManagerEscape)) {
       if (FixedPcdGetBool (PcdSerialTerminalPrintEnabled)) {
         Print (

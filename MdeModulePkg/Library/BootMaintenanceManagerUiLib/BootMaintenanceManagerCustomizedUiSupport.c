@@ -327,6 +327,62 @@ BmmCreateZeroTimeoutGracePeriodMenu (
 }
 
 /**
+  Create Setup Entry Prompt Menu in the page.
+
+  @param[in]    HiiHandle           The hii handle for the Uiapp driver.
+  @param[in]    StartOpCodeHandle   The opcode handle to save the new opcode.
+
+**/
+VOID
+BmmCreateShowBootPromptMenu (
+  IN EFI_HII_HANDLE  HiiHandle,
+  IN VOID            *StartOpCodeHandle
+  )
+{
+  VOID  *OptionsOpCodeHandle;
+
+  OptionsOpCodeHandle = HiiAllocateOpCodeHandle ();
+  ASSERT (OptionsOpCodeHandle != NULL);
+
+  //
+  // Create "Disabled" option (value 0)
+  //
+  HiiCreateOneOfOptionOpCode (
+    OptionsOpCodeHandle,
+    STRING_TOKEN (STR_SHOW_BOOT_PROMPT_DISABLED),
+    0,
+    EFI_IFR_TYPE_NUM_SIZE_8,
+    0
+    );
+
+  //
+  // Create "Enabled" option (value 1)
+  //
+  HiiCreateOneOfOptionOpCode (
+    OptionsOpCodeHandle,
+    STRING_TOKEN (STR_SHOW_BOOT_PROMPT_ENABLED),
+    0,
+    EFI_IFR_TYPE_NUM_SIZE_8,
+    1
+    );
+
+  HiiCreateOneOfOpCode (
+    StartOpCodeHandle,
+    SHOW_BOOT_PROMPT_QUESTION_ID,
+    VARSTORE_ID_BOOT_MAINT,
+    SHOW_BOOT_PROMPT_VAR_OFFSET,
+    STRING_TOKEN (STR_SHOW_BOOT_PROMPT_PROMPT),
+    STRING_TOKEN (STR_SHOW_BOOT_PROMPT_HELP),
+    EFI_IFR_FLAG_CALLBACK,
+    EFI_IFR_NUMERIC_SIZE_1,
+    OptionsOpCodeHandle,
+    NULL
+    );
+
+  HiiFreeOpCodeHandle (OptionsOpCodeHandle);
+}
+
+/**
   Extract device path for given HII handle and class guid.
 
   @param Handle          The HII handle.

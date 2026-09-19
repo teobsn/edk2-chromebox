@@ -101,3 +101,4 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdPrioritizeInternal         ## CONSUMES
   gEfiMdeModulePkgTokenSpaceGuid.PcdSkipConnectAll             ## CONSUMES
   gEfiMdeModulePkgTokenSpaceGuid.PcdZeroTimeoutKeyboardGracePeriod    ## CONSUMES
+  gEfiMdeModulePkgTokenSpaceGuid.PcdShowBootPrompt             ## CONSUMES
