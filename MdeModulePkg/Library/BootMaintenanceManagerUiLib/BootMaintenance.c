@@ -969,6 +969,29 @@ BootMaintRouteConfig (
     DEBUG ((DEBUG_INFO, "BMM: Successfully set ZeroTimeoutGracePeriod to %d\n", GracePeriodValue));
   }
 
+  DEBUG ((DEBUG_VERBOSE, "BMM: ShowBootPrompt - New: %d, Old: %d\n", NewBmmData->ShowBootPrompt, OldBmmData->ShowBootPrompt));
+  if (CompareMem (&NewBmmData->ShowBootPrompt, &OldBmmData->ShowBootPrompt, sizeof (NewBmmData->ShowBootPrompt)) != 0) {
+    UINT8  ShowBootPromptValue;
+
+    ShowBootPromptValue = NewBmmData->ShowBootPrompt;
+    DEBUG ((DEBUG_INFO, "BMM: Setting ShowBootPrompt to %d\n", ShowBootPromptValue));
+    Status = gRT->SetVariable (
+                    L"ShowBootPrompt",
+                    &mBootMaintGuid,
+                    EFI_VARIABLE_BOOTSERVICE_ACCESS | EFI_VARIABLE_RUNTIME_ACCESS | EFI_VARIABLE_NON_VOLATILE,
+                    sizeof (UINT8),
+                    &ShowBootPromptValue
+                    );
+    if (EFI_ERROR (Status)) {
+      DEBUG ((DEBUG_ERROR, "BMM: Failed to set ShowBootPrompt variable: %r\n", Status));
+      Offset = OFFSET_OF (BMM_FAKE_NV_DATA, ShowBootPrompt);
+      goto Exit;
+    }
+
+    Private->BmmOldFakeNVData.ShowBootPrompt = NewBmmData->ShowBootPrompt;
+    DEBUG ((DEBUG_INFO, "BMM: Successfully set ShowBootPrompt to %d\n", ShowBootPromptValue));
+  }
+
   //
   // Check data which located in Driver Options Menu and save the settings if need
   //
@@ -1731,6 +1754,43 @@ InitializeBmmConfig (
     }
 
     CallbackData->BmmOldFakeNVData.ZeroTimeoutGracePeriod = CallbackData->BmmFakeNvData.ZeroTimeoutGracePeriod;
+  }
+
+  //
+  // Initialize ShowBootPrompt from runtime variable, fallback to PCD
+  // 0 = Disabled, 1 = Enabled (default if PCD set)
+  //
+  {
+    UINT8    *ShowBootPromptVar;
+    UINTN    ShowBootPromptVarSize;
+
+    CallbackData->BmmFakeNvData.ShowBootPrompt = PcdGetBool (PcdShowBootPrompt) ? 1 : 0;
+    ShowBootPromptVarSize = sizeof (UINT8);
+    ShowBootPromptVar = AllocatePool (ShowBootPromptVarSize);
+    if (ShowBootPromptVar != NULL) {
+      EFI_STATUS  Status;
+      UINTN       TempSize;
+
+      TempSize = ShowBootPromptVarSize;
+      Status   = gRT->GetVariable (L"ShowBootPrompt", &mBootMaintGuid, NULL, &TempSize, ShowBootPromptVar);
+      if (Status == EFI_BUFFER_TOO_SMALL) {
+        FreePool (ShowBootPromptVar);
+        ShowBootPromptVar = AllocatePool (TempSize);
+        if (ShowBootPromptVar != NULL) {
+          Status = gRT->GetVariable (L"ShowBootPrompt", &mBootMaintGuid, NULL, &TempSize, ShowBootPromptVar);
+        }
+      }
+
+      if (!EFI_ERROR (Status) && (TempSize == sizeof (UINT8))) {
+        CallbackData->BmmFakeNvData.ShowBootPrompt = (*ShowBootPromptVar != 0) ? 1 : 0;
+      }
+
+      if (ShowBootPromptVar != NULL) {
+        FreePool (ShowBootPromptVar);
+      }
+    }
+
+    CallbackData->BmmOldFakeNVData.ShowBootPrompt = CallbackData->BmmFakeNvData.ShowBootPrompt;
   }
 
   //

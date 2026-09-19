@@ -120,6 +120,14 @@ PlatformSkipConnectAll (
   );
 
 /**
+  Check if the boot prompt ("Press ESC for Boot Options/Settings") is enabled via NVRAM or PCD.
+**/
+BOOLEAN
+PlatformShowBootPrompt (
+  VOID
+  );
+
+/**
   Use SystemTable Conout to stop video based Simple Text Out consoles from going
   to the video device. Put up LogoFile on every video device that is a console.
 

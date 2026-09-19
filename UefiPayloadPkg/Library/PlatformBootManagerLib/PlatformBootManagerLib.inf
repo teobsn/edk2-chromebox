@@ -84,6 +84,7 @@
   gEfiMdePkgTokenSpaceGuid.PcdUartDefaultStopBits
   gEfiMdeModulePkgTokenSpaceGuid.PcdFollowBGRTSpecification
   gEfiMdeModulePkgTokenSpaceGuid.PcdSkipConnectAll
+  gEfiMdeModulePkgTokenSpaceGuid.PcdShowBootPrompt
   gUefiPayloadPkgTokenSpaceGuid.PcdBootManagerEscape
   gUefiPayloadPkgTokenSpaceGuid.PcdSerialTerminalPrintEnabled
   gUefiPayloadPkgTokenSpaceGuid.PcdiPXEFile

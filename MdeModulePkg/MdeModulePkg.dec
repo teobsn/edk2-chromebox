@@ -1823,6 +1823,10 @@
   # @prompt Zero-Timeout Keyboard Grace Period.
   gEfiMdeModulePkgTokenSpaceGuid.PcdZeroTimeoutKeyboardGracePeriod|TRUE|BOOLEAN|0x00000045
 
+  ## Indicates if the "Press ESC to enter Setup" prompt should be shown during boot timeout.
+  # @prompt Show Setup Entry Prompt.
+  gEfiMdeModulePkgTokenSpaceGuid.PcdShowBootPrompt|TRUE|BOOLEAN|0x00000046
+
 [PcdsPatchableInModule, PcdsDynamic, PcdsDynamicEx]
   ## This PCD defines the Console output row. The default value is 25 according to UEFI spec.
   #  This PCD could be set to 0 then console output would be at max column and max row.

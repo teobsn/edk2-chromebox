@@ -126,6 +126,19 @@ BmmCreateZeroTimeoutGracePeriodMenu (
   );
 
 /**
+  Create Setup Entry Prompt Menu in the page.
+
+  @param[in]    HiiHandle           The hii handle for the Uiapp driver.
+  @param[in]    StartOpCodeHandle   The opcode handle to save the new opcode.
+
+**/
+VOID
+BmmCreateShowBootPromptMenu (
+  IN EFI_HII_HANDLE  HiiHandle,
+  IN VOID            *StartOpCodeHandle
+  );
+
+/**
   Rename the driver name if necessary.
 
   @param    DriverName          Input the driver name.

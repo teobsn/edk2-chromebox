@@ -103,6 +103,16 @@ UiCustomizeBMMPage (
   // Create "Zero-Timeout Keyboard Grace Period" menu.
   //
   BmmCreateZeroTimeoutGracePeriodMenu (HiiHandle, StartOpCodeHandle);
+
+  //
+  // Create empty line.
+  //
+  BmmCreateEmptyLine (HiiHandle, StartOpCodeHandle);
+
+  //
+  // Create "Setup Entry Prompt" menu.
+  //
+  BmmCreateShowBootPromptMenu (HiiHandle, StartOpCodeHandle);
 }
 
 /**

@@ -359,3 +359,33 @@ PlatformSkipConnectAll (
 
   return FixedPcdGetBool (PcdSkipConnectAll);
 }
+
+/**
+  Check if the boot prompt ("Press ESC for Boot Options/Settings") is enabled via NVRAM or PCD.
+**/
+BOOLEAN
+PlatformShowBootPrompt (
+  VOID
+  )
+{
+  EFI_STATUS       Status;
+  UINT8            Value;
+  UINTN            DataSize;
+  STATIC EFI_GUID  BootMaintGuid = {
+    0x642237c7, 0x35d4, 0x472d, { 0x83, 0x65, 0x12, 0xe0, 0xcc, 0xf2, 0x7a, 0x22 }
+  };
+
+  DataSize = sizeof (Value);
+  Status   = gRT->GetVariable (
+                    L"ShowBootPrompt",
+                    &BootMaintGuid,
+                    NULL,
+                    &DataSize,
+                    &Value
+                    );
+  if (!EFI_ERROR (Status) && (DataSize == sizeof (Value))) {
+    return (Value != 0);
+  }
+
+  return PcdGetBool (PcdShowBootPrompt);
+}
