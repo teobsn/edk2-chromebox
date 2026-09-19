@@ -243,9 +243,18 @@ PlatformUnregisterBootManagerEntryNotifyCallback (
                   (VOID **)&SimpleEx
                   );
   if (!EFI_ERROR (Status)) {
-    Status = SimpleEx->UnregisterKeyNotify (SimpleEx, BootManagerEntryNotifyHandle1);
-    Status = SimpleEx->UnregisterKeyNotify (SimpleEx, BootManagerEntryNotifyHandle2);
-    Status = SimpleEx->UnregisterKeyNotify (SimpleEx, BootManagerContinueNotifyHandle);
+    if (BootManagerEntryNotifyHandle1 != NULL) {
+      SimpleEx->UnregisterKeyNotify (SimpleEx, BootManagerEntryNotifyHandle1);
+      BootManagerEntryNotifyHandle1 = NULL;
+    }
+    if (BootManagerEntryNotifyHandle2 != NULL) {
+      SimpleEx->UnregisterKeyNotify (SimpleEx, BootManagerEntryNotifyHandle2);
+      BootManagerEntryNotifyHandle2 = NULL;
+    }
+    if (BootManagerContinueNotifyHandle != NULL) {
+      SimpleEx->UnregisterKeyNotify (SimpleEx, BootManagerContinueNotifyHandle);
+      BootManagerContinueNotifyHandle = NULL;
+    }
   }
 }
 
@@ -272,6 +281,7 @@ PlatformReadyToBootCallback (
   IN VOID       *Context
   )
 {
+  PlatformUnregisterBootManagerEntryNotifyCallback ();
   BootLogoClearProgress ();
   gBS->CloseEvent (Event);
 }
