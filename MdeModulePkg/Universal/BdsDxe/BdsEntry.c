@@ -305,6 +305,41 @@ BdsReadKeys (
 }
 
 /**
+  Check if Zero-Timeout Keyboard Grace Period is enabled.
+  Reads the NVRAM variable "ZeroTimeoutGracePeriod", falling back to PcdZeroTimeoutKeyboardGracePeriod.
+
+  @retval TRUE   Grace period is enabled.
+  @retval FALSE  Grace period is disabled.
+**/
+STATIC
+BOOLEAN
+IsZeroTimeoutGracePeriodEnabled (
+  VOID
+  )
+{
+  EFI_STATUS       Status;
+  UINT8            Value;
+  UINTN            DataSize;
+  STATIC EFI_GUID  BootMaintGuid = {
+    0x642237c7, 0x35d4, 0x472d, { 0x83, 0x65, 0x12, 0xe0, 0xcc, 0xf2, 0x7a, 0x22 }
+  };
+
+  DataSize = sizeof (Value);
+  Status   = gRT->GetVariable (
+                    L"ZeroTimeoutGracePeriod",
+                    &BootMaintGuid,
+                    NULL,
+                    &DataSize,
+                    &Value
+                    );
+  if (!EFI_ERROR (Status) && (DataSize == sizeof (Value))) {
+    return (Value != 0);
+  }
+
+  return PcdGetBool (PcdZeroTimeoutKeyboardGracePeriod);
+}
+
+/**
   The function waits for the boot manager timeout expires or hotkey is pressed.
 
   It calls PlatformBootManagerWaitCallback each second.
@@ -349,10 +384,10 @@ BdsWait (
   }
 
   //
-  // When Timeout is 0, provide a brief grace period to allow keyboard drivers
-  // (PS/2 typematic repeat or USB interrupt transfers) to report a held hotkey.
+  // When Timeout is 0 and grace period is enabled, provide a brief grace period to allow
+  // keyboard drivers (PS/2 typematic repeat or USB interrupt transfers) to report a held hotkey.
   //
-  if (PcdGet16 (PcdPlatformBootTimeOut) == 0) {
+  if ((PcdGet16 (PcdPlatformBootTimeOut) == 0) && IsZeroTimeoutGracePeriodEnabled ()) {
     for (Index = 0; Index < 5; Index++) {
       BdsReadKeys ();
       if (HotkeyTriggered != NULL) {

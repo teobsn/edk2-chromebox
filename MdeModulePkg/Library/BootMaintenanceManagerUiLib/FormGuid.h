@@ -101,6 +101,7 @@ typedef struct {
   UINT32     BootNext;
   UINT8      BootDevicePriority;  // 0 = External, 1 = Internal
   UINT8      FastBoot;            // 0 = Disabled, 1 = Enabled
+  UINT8      ZeroTimeoutGracePeriod; // 0 = Disabled, 1 = Enabled
 
   //
   // This is the COM1 Attributes value storage
