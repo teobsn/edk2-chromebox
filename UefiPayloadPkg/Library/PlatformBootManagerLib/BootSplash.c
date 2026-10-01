@@ -41,6 +41,14 @@ BootSplashGetUint8Variable (
   return Value;
 }
 
+STATIC
+EFI_STATUS
+BootSplashBltAndRegister (
+  IN EFI_GRAPHICS_OUTPUT_BLT_PIXEL  *Blt,
+  IN UINTN                          Width,
+  IN UINTN                          Height
+  );
+
 /**
   Display a custom BMP from BootSplashPath and register it with BootLogo.
 
@@ -63,9 +71,6 @@ BootSplashDisplayCustom (
   UINTN                          Width;
   INTN                           DestX;
   INTN                           DestY;
-  EFI_GRAPHICS_OUTPUT_PROTOCOL   *GraphicsOutput;
-  EFI_BOOT_LOGO_PROTOCOL         *BootLogo;
-  EDKII_BOOT_LOGO2_PROTOCOL      *BootLogo2;
 
   StoredPath = AllocateZeroPool (BOOT_SPLASH_PATH_MAX_SIZE);
   if (StoredPath == NULL) {
@@ -106,6 +111,38 @@ BootSplashDisplayCustom (
     return EFI_ERROR (Status) ? Status : EFI_UNSUPPORTED;
   }
 
+  return BootSplashBltAndRegister (Blt, Width, Height);
+}
+
+/**
+  Render a splash Blt buffer to screen at the configured position,
+  register it with BootLogo / BootLogo2 protocols, and free the Blt buffer.
+
+  @param[in] Blt     Pointer to the Blt pixel buffer (ownership transferred, will be freed).
+  @param[in] Width   Image width in pixels.
+  @param[in] Height  Image height in pixels.
+
+  @retval EFI_SUCCESS Image rendered successfully.
+  @retval other       Failed to render image.
+**/
+STATIC
+EFI_STATUS
+BootSplashBltAndRegister (
+  IN EFI_GRAPHICS_OUTPUT_BLT_PIXEL  *Blt,
+  IN UINTN                          Width,
+  IN UINTN                          Height
+  )
+{
+  EFI_STATUS                    Status;
+  EFI_GRAPHICS_OUTPUT_PROTOCOL  *GraphicsOutput;
+  EFI_BOOT_LOGO_PROTOCOL        *BootLogo;
+  EDKII_BOOT_LOGO2_PROTOCOL     *BootLogo2;
+  INTN                          DestX;
+  INTN                          DestY;
+  UINT32                        SizeOfX;
+  UINT32                        SizeOfY;
+  UINT8                         Position;
+
   Status = gBS->HandleProtocol (
                   gST->ConsoleOutHandle,
                   &gEfiGraphicsOutputProtocolGuid,
@@ -116,6 +153,29 @@ BootSplashDisplayCustom (
     return Status;
   }
 
+  SizeOfX = GraphicsOutput->Mode->Info->HorizontalResolution;
+  SizeOfY = GraphicsOutput->Mode->Info->VerticalResolution;
+  if ((Width > SizeOfX) || (Height > SizeOfY)) {
+    FreePool (Blt);
+    return EFI_UNSUPPORTED;
+  }
+
+  Position = BootSplashGetUint8Variable (
+               BOOT_SPLASH_POSITION_VARIABLE_NAME,
+               BOOT_SPLASH_POSITION_DEFAULT
+               );
+
+  DestX = (INTN)(SizeOfX - Width) / 2;
+  if (Position == BOOT_SPLASH_POSITION_UPPER) {
+    DestY = (INTN)(SizeOfY * 382) / 1000 - (INTN)Height / 2;
+  } else {
+    DestY = (INTN)(SizeOfY - Height) / 2;
+  }
+
+  if ((DestX < 0) || (DestY < 0)) {
+    FreePool (Blt);
+    return EFI_UNSUPPORTED;
+  }
   gST->ConOut->EnableCursor (gST->ConOut, FALSE);
 
   Status = GraphicsOutput->Blt (
@@ -165,8 +225,13 @@ BootSplashDisplayDefault (
   VOID
   )
 {
-  EFI_STATUS                    Status;
-  EDKII_PLATFORM_LOGO_PROTOCOL  *PlatformLogo;
+  EFI_STATUS                             Status;
+  EDKII_PLATFORM_LOGO_PROTOCOL           *PlatformLogo;
+  UINT32                                 Instance;
+  EFI_IMAGE_INPUT                        Image;
+  EDKII_PLATFORM_LOGO_DISPLAY_ATTRIBUTE  Attribute;
+  INTN                                   OffsetX;
+  INTN                                   OffsetY;
 
   Status = gBS->LocateProtocol (&gEdkiiPlatformLogoProtocolGuid, NULL, (VOID **)&PlatformLogo);
   if (EFI_ERROR (Status)) {
@@ -177,7 +242,24 @@ BootSplashDisplayDefault (
     gST->ConOut->ClearScreen (gST->ConOut);
   }
 
-  BootLogoEnableLogo ();
+  Instance = 0;
+  Status   = PlatformLogo->GetImage (
+                             PlatformLogo,
+                             &Instance,
+                             &Image,
+                             &Attribute,
+                             &OffsetX,
+                             &OffsetY
+                             );
+  if (EFI_ERROR (Status) || (Image.Bitmap == NULL)) {
+    BootLogoEnableLogo ();
+    return;
+  }
+
+  Status = BootSplashBltAndRegister (Image.Bitmap, (UINTN)Image.Width, (UINTN)Image.Height);
+  if (EFI_ERROR (Status)) {
+    BootLogoEnableLogo ();
+  }
 }
 
 /**
