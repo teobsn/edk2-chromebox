@@ -74,6 +74,28 @@ BootSplashSeedDefaults (
 
   DataSize = sizeof (Value);
   Status   = gRT->GetVariable (
+                    BOOT_SPLASH_POSITION_VARIABLE_NAME,
+                    &gUefiPayloadBootSplashGuid,
+                    NULL,
+                    &DataSize,
+                    &Value
+                    );
+  if (Status == EFI_NOT_FOUND) {
+    Value = BOOT_SPLASH_POSITION_DEFAULT;
+    Status = gRT->SetVariable (
+                    BOOT_SPLASH_POSITION_VARIABLE_NAME,
+                    &gUefiPayloadBootSplashGuid,
+                    BOOT_SPLASH_VARIABLE_ATTRIBUTES,
+                    sizeof (Value),
+                    &Value
+                    );
+    if (EFI_ERROR (Status)) {
+      DEBUG ((DEBUG_WARN, "%a: failed to seed BootSplashPosition: %r\n", __func__, Status));
+    }
+  }
+
+  DataSize = sizeof (Value);
+  Status   = gRT->GetVariable (
                     BOOT_SPLASH_TYPE_VARIABLE_NAME,
                     &gUefiPayloadBootSplashGuid,
                     NULL,

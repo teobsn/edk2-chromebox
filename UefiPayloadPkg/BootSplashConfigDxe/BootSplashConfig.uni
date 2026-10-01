@@ -16,6 +16,11 @@
 #string STR_BOOT_SPLASH_ENABLE_PROMPT       #language en-US "Show boot splash"
 #string STR_BOOT_SPLASH_ENABLE_HELP         #language en-US "Enable or disable displaying a logo during boot"
 
+#string STR_BOOT_SPLASH_POS_PROMPT          #language en-US "Logo position"
+#string STR_BOOT_SPLASH_POS_HELP            #language en-US "Position of the boot splash logo on screen"
+#string STR_BOOT_SPLASH_POS_CENTER          #language en-US "Center (50%)"
+#string STR_BOOT_SPLASH_POS_UPPER           #language en-US "Upper / BGRT (38.2%)"
+
 #string STR_BOOT_SPLASH_TYPE_PROMPT         #language en-US "Logo source"
 #string STR_BOOT_SPLASH_TYPE_HELP           #language en-US "Use the built-in logo or a custom BMP from the filesystem"
 #string STR_BOOT_SPLASH_TYPE_DEFAULT        #language en-US "Default"
