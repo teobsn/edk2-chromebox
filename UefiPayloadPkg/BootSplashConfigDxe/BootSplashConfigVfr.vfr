@@ -42,7 +42,7 @@ formset
     checkbox varid = BootSplashEnable.Value,
       prompt = STRING_TOKEN(STR_BOOT_SPLASH_ENABLE_PROMPT),
       help   = STRING_TOKEN(STR_BOOT_SPLASH_ENABLE_HELP),
-      flags  = 0,
+      flags  = CHECKBOX_DEFAULT,
     endcheckbox;
 
     subtitle text = STRING_TOKEN(STR_NULL_STRING);
