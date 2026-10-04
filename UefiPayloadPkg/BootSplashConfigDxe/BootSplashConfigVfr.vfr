@@ -51,8 +51,8 @@ formset
       oneof varid = BootSplashPosition.Value,
         prompt = STRING_TOKEN(STR_BOOT_SPLASH_POS_PROMPT),
         help   = STRING_TOKEN(STR_BOOT_SPLASH_POS_HELP),
-        option text = STRING_TOKEN(STR_BOOT_SPLASH_POS_CENTER), value = 0, flags = DEFAULT;
-        option text = STRING_TOKEN(STR_BOOT_SPLASH_POS_UPPER),  value = 1, flags = 0;
+        option text = STRING_TOKEN(STR_BOOT_SPLASH_POS_CENTER), value = 0, flags = 0;
+        option text = STRING_TOKEN(STR_BOOT_SPLASH_POS_UPPER),  value = 1, flags = DEFAULT;
       endoneof;
 
       subtitle text = STRING_TOKEN(STR_NULL_STRING);
