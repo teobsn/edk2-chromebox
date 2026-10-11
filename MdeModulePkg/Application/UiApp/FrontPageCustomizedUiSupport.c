@@ -434,9 +434,6 @@ UiListThirdPartyDrivers (
       gHiiDriverList[Index].DevicePathId
       );
 
-    // Always add an empty line after each entry
-    UiCreateEmptyLine (HiiHandle, StartOpCodeHandle);
-
     Index++;
   }
 

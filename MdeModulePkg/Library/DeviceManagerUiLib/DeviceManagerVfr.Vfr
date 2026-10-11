@@ -41,10 +41,6 @@ formset
 
     label LABEL_DEVICES_LIST;
     label LABEL_END;
-
-    subtitle text = STRING_TOKEN(STR_EMPTY_STRING);
-    subtitle text = STRING_TOKEN(STR_EMPTY_STRING);
-    subtitle text = STRING_TOKEN(STR_EXIT_STRING);
   endform;
 
   form formid = NETWORK_DEVICE_LIST_FORM_ID,
@@ -53,9 +49,6 @@ formset
 
     label LABEL_NETWORK_DEVICE_LIST_ID;
     label LABEL_END;
-
-    subtitle text = STRING_TOKEN(STR_EMPTY_STRING);
-    subtitle text = STRING_TOKEN(STR_EXIT_STRING);
   endform;
 
   form formid = NETWORK_DEVICE_FORM_ID,
@@ -64,8 +57,5 @@ formset
 
     label LABEL_NETWORK_DEVICE_ID;
     label LABEL_END;
-
-    subtitle text = STRING_TOKEN(STR_EMPTY_STRING);
-    subtitle text = STRING_TOKEN(STR_EXIT_STRING);
   endform;
 endformset;

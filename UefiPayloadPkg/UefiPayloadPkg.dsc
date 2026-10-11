@@ -829,6 +829,14 @@
 
   gEfiMdeModulePkgTokenSpaceGuid.PcdFollowBGRTSpecification|$(FOLLOW_BGRT_SPEC)
 
+  #
+  # HII Form Browser Theme (OLED Dark Mode with IBM Blue)
+  #
+  gEfiMdeModulePkgTokenSpaceGuid.PcdBrowserFieldTextColor|0x0F
+  gEfiMdeModulePkgTokenSpaceGuid.PcdBrowserSubtitleTextColor|0x09
+  gEfiMdeModulePkgTokenSpaceGuid.PcdBrowserFieldTextHighlightColor|0x0F
+  gEfiMdeModulePkgTokenSpaceGuid.PcdBrowserFieldBackgroundHighlightColor|0x10
+
   gEfiMdePkgTokenSpaceGuid.PcdMaximumUnicodeStringLength|1800000
 
   ## Whether FMP capsules are enabled.
