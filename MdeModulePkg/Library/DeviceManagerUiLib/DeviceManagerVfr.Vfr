@@ -27,6 +27,7 @@ formset
   form formid = DEVICE_MANAGER_FORM_ID,
     title  = STRING_TOKEN(STR_EDKII_MENU_TITLE);
     subtitle text = STRING_TOKEN(STR_DEVICES_LIST);
+    subtitle text = STRING_TOKEN(STR_EMPTY_STRING);
 
     //
     // Add this invisable text in order to indicate enter Device Manager form.

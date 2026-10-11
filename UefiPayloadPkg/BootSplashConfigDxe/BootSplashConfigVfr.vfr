@@ -45,8 +45,6 @@ formset
       flags  = CHECKBOX_DEFAULT,
     endcheckbox;
 
-    subtitle text = STRING_TOKEN(STR_NULL_STRING);
-
     suppressif ideqval BootSplashEnable.Value == 0;
       oneof varid = BootSplashPosition.Value,
         prompt = STRING_TOKEN(STR_BOOT_SPLASH_POS_PROMPT),
@@ -55,16 +53,12 @@ formset
         option text = STRING_TOKEN(STR_BOOT_SPLASH_POS_UPPER),  value = 1, flags = DEFAULT;
       endoneof;
 
-      subtitle text = STRING_TOKEN(STR_NULL_STRING);
-
       oneof varid = BootSplashType.Value,
         prompt = STRING_TOKEN(STR_BOOT_SPLASH_TYPE_PROMPT),
         help   = STRING_TOKEN(STR_BOOT_SPLASH_TYPE_HELP),
         option text = STRING_TOKEN(STR_BOOT_SPLASH_TYPE_DEFAULT), value = 0, flags = DEFAULT;
         option text = STRING_TOKEN(STR_BOOT_SPLASH_TYPE_CUSTOM), value = 1, flags = 0;
       endoneof;
-
-      subtitle text = STRING_TOKEN(STR_NULL_STRING);
 
       suppressif ideqval BootSplashType.Value == 0;
         text
